@@ -4,8 +4,8 @@
 """
 ZetCode PyQt5 tutorial 
 
-This example shows a tooltip on
-a window and a button.
+This program centers a window
+on the screen.
 
 author: Jan Bodnar
 website: zetcode.com
@@ -13,9 +13,7 @@ last edited: January 2015
 """
 
 import sys
-from PyQt5.QtWidgets import (QWidget, QToolTip,
-                             QPushButton, QApplication)
-from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QWidget, QDesktopWidget, QApplication
 
 
 class Example(QWidget):
@@ -25,21 +23,20 @@ class Example(QWidget):
         self.initUI()
 
     def initUI(self):
-        QToolTip.setFont(QFont('SansSerif', 10))
+        self.resize(250, 150)
+        self.center()
 
-        self.setToolTip('This is a <b>QWidget</b> widget')
-
-        btn = QPushButton('Button', self)
-        btn.setToolTip('This is a <b>QPushButton</b> widget')
-        btn.resize(btn.sizeHint())
-        btn.move(50, 50)
-
-        self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('Tooltips')
+        self.setWindowTitle('Center')
         self.show()
+
+    def center(self):
+        qr = self.frameGeometry()
+        cp = QDesktopWidget().availableGeometry().center()
+        qr.moveCenter(cp)
+        self.move(qr.topLeft())
 
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Example()
-    sys.exit(app.exec_())
+    sys.exit(app.exec_())  
