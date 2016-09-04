@@ -23,7 +23,7 @@ class Example(QWidget):
         self.initUI()
 
     def initUI(self):
-        self.resize(250, 150)
+        self.resize(250, 450)
         self.center()
 
         self.setWindowTitle('Center')
@@ -39,4 +39,4 @@ class Example(QWidget):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Example()
-    sys.exit(app.exec_())  
+    sys.exit(app.exec_())
