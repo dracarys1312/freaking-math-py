@@ -1,12 +1,10 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication
-from PyQt5.QtWidgets import QWidget, QApplication
-from PyQt5.QtGui import QPainter, QColor, QBrush
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
-from PyQt5.QtGui import QImage
-import urllib.request
-from PyQt5 import QtGui
-
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QAbstractButton, QWidget, QHBoxLayout
+from PyQt5.QtGui import QPainter, QColor, QPixmap
+from PyQt5.QtCore import QSize
+from threading import Timer
+import math, random
+from socket import *
 
 class Main(QMainWindow):
     def __init__(self):
@@ -15,19 +13,6 @@ class Main(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        # hbox = QHBoxLayout(self)
-        # url = 'https://raw.githubusercontent.com/evertheylen/freakingmath-hack/master/img/true.png'
-        # data = urllib.request.urlopen(url).read()
-        #
-        # image = QImage()
-        # image.loadFromData(data)
-        #
-        # lbl = QLabel(self)
-        # lbl.setPixmap(QtGui.QPixmap(image))
-        #
-        # hbox.addWidget(lbl)
-        # self.setLayout(hbox)
-
         btn1 = QPushButton("True", self)
         btn1.move(75, 450)
 
@@ -60,6 +45,66 @@ class Main(QMainWindow):
 
         qp.setBrush(QColor(46, 204, 113))
         qp.drawRect(0, 0, 400, 600)
+
+g = True
+score = 0
+sec = 0
+
+def getRandomNum():
+    min = 1
+    max = 10
+    randomNum = random.random() * (max - min) + min
+    return math.floor(randomNum)
+
+
+def randomNumber():
+    random = getRandomNum()
+    first = getRandomNum()
+    second = getRandomNum()
+    answer = first + second
+    if (random == 0):
+        g = True
+    else:
+        g = False
+
+
+def count():
+    global score
+    score = score + 1
+
+def resetMath():
+    global score
+    score = 0
+
+def checkTrue():
+    # clearTime()
+    if (g == True):
+        count()
+        randomNumber()
+    else:
+        resetMath()
+
+
+def checkFalse():
+    # clearTime()
+    if (g == False):
+        count()
+        randomNumber()
+    else:
+        resetMath()
+
+
+def start():
+    # clearTime()
+    g = True
+    randomNumber()
+    score = 0
+
+# def creatTime():
+#     timeCount = Timer(1000, resetMath()).start()
+#
+# def clearTime():
+#     clearInterval(timeCount)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
