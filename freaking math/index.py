@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QAbstractButton, QWidget, QHBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QAbstractButton, QWidget, QHBoxLayout, QLabel, QLineEdit
 from PyQt5.QtGui import QPainter, QColor, QPixmap
 from PyQt5.QtCore import QSize
 from threading import Timer
@@ -9,7 +9,6 @@ from socket import *
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
-
         self.initUI()
 
     def initUI(self):

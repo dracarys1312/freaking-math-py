@@ -1,7 +1,6 @@
 import sys
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QApplication
 
-
 class Example(QMainWindow):
     def __init__(self):
         super().__init__()
