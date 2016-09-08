@@ -1,21 +1,7 @@
-#!/usr/bin/python3
-# -*- coding: utf-8 -*-
-
-"""
-ZetCode PyQt5 tutorial
-
-This is a Tetris game clone.
-
-author: Jan Bodnar
-website: zetcode.com
-last edited: January 2015
-"""
-
 import sys, random
-from PyQt5.QtWidgets import QMainWindow, QFrame, QDesktopWidget, QApplication
 from PyQt5.QtCore import Qt, QBasicTimer, pyqtSignal
+from PyQt5.QtWidgets import QMainWindow, QFrame, QDesktopWidget, QApplication
 from PyQt5.QtGui import QPainter, QColor
-
 
 class Tetris(QMainWindow):
     def __init__(self):

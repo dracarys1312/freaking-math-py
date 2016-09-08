@@ -6,7 +6,11 @@ from threading import Timer
 import math, random
 from socket import *
 
-class Main(QMainWindow):
+g = True
+score = 0
+sec = 0
+
+class Main(QWidget):
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -18,18 +22,9 @@ class Main(QMainWindow):
         btn2 = QPushButton("False", self)
         btn2.move(225, 450)
 
-        btn1.clicked.connect(self.buttonClicked)
-        btn2.clicked.connect(self.buttonClicked)
-
-        self.statusBar()
-
         self.setGeometry(500, 100, 400, 600)
         self.setWindowTitle('Freaking Math              made by Pt')
         self.show()
-
-    def buttonClicked(self):
-        sender = self.sender()
-        self.statusBar().showMessage(sender.text() + ' was pressed')
 
     def paintEvent(self, e):
         qp = QPainter()
@@ -45,65 +40,60 @@ class Main(QMainWindow):
         qp.setBrush(QColor(46, 204, 113))
         qp.drawRect(0, 0, 400, 600)
 
-g = True
-score = 0
-sec = 0
-
-def getRandomNum():
-    min = 1
-    max = 10
-    randomNum = random.random() * (max - min) + min
-    return math.floor(randomNum)
+    def getRandomNum(self):
+        min = 1
+        max = 10
+        randomNum = random.random() * (max - min) + min
+        return math.floor(randomNum)
 
 
-def randomNumber():
-    random = getRandomNum()
-    first = getRandomNum()
-    second = getRandomNum()
-    answer = first + second
-    if (random == 0):
-        g = True
-    else:
-        g = False
+    def randomNumber(self):
+        self.random = self.getRandomNum()
+        self.first = self.getRandomNum()
+        self.second = self.getRandomNum()
+        self.answer = self.first + self.second
+        if (self.random == 0):
+            g = True
+        else:
+            g = False
 
 
-def count():
-    global score
-    score = score + 1
+    def count(self):
+        global score
+        self.score = score + 1
 
-def resetMath():
-    global score
-    score = 0
+    def resetMath(self):
+        global score
+        self.score = 0
 
-def checkTrue():
-    # clearTime()
-    if (g == True):
-        count()
-        randomNumber()
-    else:
-        resetMath()
-
-
-def checkFalse():
-    # clearTime()
-    if (g == False):
-        count()
-        randomNumber()
-    else:
-        resetMath()
+    def checkTrue(self):
+        # clearTime()
+        if (g == True):
+            self.count()
+            self.randomNumber()
+        else:
+            self.resetMath()
 
 
-def start():
-    # clearTime()
-    g = True
-    randomNumber()
-    score = 0
+    def checkFalse(self):
+        # clearTime()
+        if (self.g == False):
+            self.count()
+            self.randomNumber()
+        else:
+            self.resetMath()
 
-# def creatTime():
-#     timeCount = Timer(1000, resetMath()).start()
-#
-# def clearTime():
-#     clearInterval(timeCount)
+    def start(self):
+        # clearTime()
+        self.g = True
+        self.randomNumber()
+        self.score = 0
+
+    # def creatTime():
+    #     timeCount = Timer(1000, resetMath()).start()
+    #
+    # def clearTime():
+    #     clearInterval(timeCount)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
