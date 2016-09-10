@@ -2,7 +2,7 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QAbstractButton, QWidget, QHBoxLayout, QLabel, QLineEdit
 
 
-def Ui_ImageDialog():
+def window():
     app = QApplication(sys.argv)
     w = QWidget()
     b = QLabel(w)

@@ -81,7 +81,7 @@ class LayoutExample(QWidget):
     # @pyqtSlot()
     def show_greeting(self):
         ''' Show the constructed greeting. '''
-        self.greeting.setText('%s, %s!' %
+        self.greeting.setText('%d + %s' %
                               (self.salutations[self.salutation.currentIndex()],
                                self.recipient.text()))
 
