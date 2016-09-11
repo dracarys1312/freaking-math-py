@@ -36,28 +36,28 @@ class Board(QWidget):
         super().__init__(parent)
 
         self.initBoard()
+        # TODO: using keyboard to select True/False
 
     def initBoard(self):
-        self.timer = QBasicTimer()
-        self.isStarted = False
-        self.setAutoFillBackground(False)
-        # self.clearBoard()
         self.score = 0
 
         # self.startBtn = QPushButton("Start", self)
         # self.startBtn.move(200, 10)
         # self.startBtn.clicked.connect(self.renderNewQuestion)
 
-        self.button = PicButton(QPixmap("./img/true.png"), QPixmap("./img/true_select.png"), QPixmap("./img/true_select.png"))
+        # self.setBackgroundColor(QColor(46, 204, 113))
 
-        self.trueBtn = QPushButton("True", self)
-        self.trueBtn.move(50, 150)
+        self.trueBtn = QPushButton("", self)
+        self.trueBtn.move(75, 150)
+        self.icon = QIcon("../freaking math/img/true.png")
+        self.trueBtn.setIcon(self.icon)
         self.trueBtn.clicked.connect(self.handleCorrect)
 
-        self.falseBtn = QPushButton("False", self)
-        self.falseBtn.move(150, 150)
+        self.falseBtn = QPushButton("", self)
+        self.falseBtn.move(175, 150)
+        self.icon = QIcon("../freaking math/img/false.png")
+        self.falseBtn.setIcon(self.icon)
         self.falseBtn.clicked.connect(self.handleWrong)
-
 
     def start(self):
         self.msg2Statusbar.emit(str(self.score))
@@ -112,56 +112,39 @@ class Board(QWidget):
             self.increaseScore()
         else:
             self.resetScore()
-        # self.renderNewQuestion()
 
     def handleWrong(self):
         if self.printed_answer != self.answer:
             self.increaseScore()
         else:
             self.resetScore()
-        # self.renderNewQuestion()
 
     def paintEvent(self, event):
         qp = QPainter()
         qp.begin(self)
         self.drawText(event, qp)
+        # TODO: improve UI
+        # TODO: improve logic, add timer
         qp.end()
 
     def drawText(self, event, qp):
         qp.setPen(QColor(100, 100, 100))
-        qp.setFont(QFont('Relay', 16))
+        qp.setFont(QFont('Arial', 16))
         qp.drawText(event.rect(), Qt.AlignCenter, self.text)
 
     def renderNewQuestion(self):
         self.getRandomMathProblem()
         self.repaint()
 
-class PicButton(QAbstractButton):
-    def __init__(self, pixmap, pixmap_hover, pixmap_pressed, parent=None):
-        super(PicButton, self).__init__(parent)
-        self.pixmap = pixmap
-        self.pixmap_hover = pixmap_hover
-        self.pixmap_pressed = pixmap_pressed
-
-        self.pressed.connect(self.update)
-        self.released.connect(self.update)
-
-    def paintEvent(self, event):
-        pix = self.pixmap_hover if self.underMouse() else self.pixmap
-        if self.isDown():
-            pix = self.pixmap_pressed
-
-        painter = QPainter(self)
-        painter.drawPixmap(event.rect(), pix)
-
-    def enterEvent(self, event):
-        self.update()
-
-    def leaveEvent(self, event):
-        self.update()
-
-    def sizeHint(self):
-        return QSize(20, 20)
+    # def keyPressEvent(self, event):
+    #     key = event.key()
+    #
+    #     if key == Qt.Key_Left:
+    #         self.trueBtn.clicked.connect(self.handleCorrect)
+    #     elif key == Qt.Key_Right:
+    #         self.falseBtn.clicked.connect(self.handleWrong)
+    #     else:
+    #         super(Board, self).keyPressEvent(event)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
