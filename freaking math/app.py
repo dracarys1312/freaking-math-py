@@ -1,68 +1,88 @@
 import sys
+import PyQt5
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
+from PyQt5.QtMultimedia import  *
+
+import freakingmath
 import random, math
+
+WIDTH = 280
+HEIGHT = 500
+BUTTON_WIDTH = 100
+BUTTON_HEIGHT = 100
+PADDING = 30
+status_bar_height = -1
 
 class Main(QMainWindow):
     def __init__(self):
         super().__init__()
-
         self.initUI()
 
     def initUI(self):
         self.board = Board(self)
         self.setCentralWidget(self.board)
 
-        self.statusbar = self.statusBar()
-        self.board.msg2Statusbar[str].connect(self.statusbar.showMessage)
-
+        #self.statusbar = self.statusBar()
+        #self.board.msg2Statusbar[str].connect(self.statusbar.showMessage)
+        #status_bar_height = self.statusbar.height()
+        #print("status bar height : {0}".format(status_bar_height))
+        
+        pal = QPalette()
+        role = QPalette.Background
+        pal.setColor(role, QColor("#009688"))
+        self.setPalette(pal)
+      
         self.board.start()
-
-        self.setGeometry(550, 300, 280, 200)
-        self.center()
+        screen = QDesktopWidget().screenGeometry()
+        self.setGeometry((screen.width() - WIDTH) / 2, (screen.height() - HEIGHT) / 2, WIDTH, HEIGHT)
         self.setWindowTitle('Freaking Math')
         self.show()
-
-    def center(self):
-        screen = QDesktopWidget().screenGeometry()
-        size = self.geometry()
-        self.move((screen.width() - size.width()) / 2,
-                  (screen.height() - size.height()) / 2)
 
 class Board(QWidget):
     msg2Statusbar = pyqtSignal(str)
     def __init__(self, parent):
         super().__init__(parent)
-
+        self.initData()
         self.initBoard()
         # TODO: using keyboard to select True/False
 
     def initBoard(self):
-        self.score = 0
-
-        # self.startBtn = QPushButton("Start", self)
-        # self.startBtn.move(200, 10)
-        # self.startBtn.clicked.connect(self.renderNewQuestion)
-
-        # self.setBackgroundColor(QColor(46, 204, 113))
-
+##        self.score = 0
+        
+        # Initialize buttons
+        trueBtnX = PADDING
+        trueBtnY = HEIGHT - PADDING - BUTTON_HEIGHT
+        
+        falseBtnX = WIDTH  - PADDING - BUTTON_WIDTH
+        falseBtnY = trueBtnY
+        
         self.trueBtn = QPushButton("", self)
-        self.trueBtn.move(75, 150)
-        self.icon = QIcon("../freaking math/img/true.png")
-        self.trueBtn.setIcon(self.icon)
+        self.trueBtn.setGeometry(trueBtnX, trueBtnY, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.trueBtn.setIcon(QIcon(".//img/true.png"))
         self.trueBtn.clicked.connect(self.handleCorrect)
+        self.trueBtn.setIconSize(QSize(BUTTON_WIDTH, BUTTON_HEIGHT))
 
         self.falseBtn = QPushButton("", self)
-        self.falseBtn.move(175, 150)
-        self.icon = QIcon("../freaking math/img/false.png")
+        self.falseBtn.setGeometry(falseBtnX, falseBtnY, BUTTON_WIDTH, BUTTON_HEIGHT)
+        self.icon = QIcon(".//img/false.png")
         self.falseBtn.setIcon(self.icon)
+        self.falseBtn.setIconSize(QSize(BUTTON_WIDTH, BUTTON_HEIGHT))
         self.falseBtn.clicked.connect(self.handleWrong)
+
+        self.correctSound = QSound(".//sound/score.wav")
+        self.incorrectSound = QSound(".//sound/gameover.wav")
+
+    def initData(self):
+        self.question = ""
+        self.score = 0
 
     def start(self):
         self.msg2Statusbar.emit(str(self.score))
+        self.getRandomMathProblem()
         # self.timer.start(Board.Speed, self)
-        self.renderNewQuestion()
+        # self.renderNewQuestion()
 
     def getRandomNum(self):
         min = 1
@@ -75,79 +95,87 @@ class Board(QWidget):
         return math.floor(printed_answer)
 
     def getRandomMathProblem(self):
-        self.num1 = self.getRandomNum()
-        self.num2 = self.getRandomNum()
-        self.answer = self.num1 + self.num2
+        # self.num1 = self.getRandomNum()
+        # self.num2 = self.getRandomNum()
+        # self.answer = self.num1 + self.num2
+
+        [self.num1, self.num2, self.sign, self.answer] =  freakingmath.generate_quiz()
 
         # TODO: need to rename properly genAnswer()
 
-        if (self.genAnswer() == 0) or (self.genAnswer() == 2):
-            self.printed_answer = self.answer + 1
+        # if (self.genAnswer() == 0) or (self.genAnswer() == 2):
+        #     self.printed_answer = self.answer + 1
+        # else:
+        #     self.printed_answer = self.answer
+
+##        self.question = ("%s + %d \n= %s"
+##                     % (self.num1, self.num2, self.answer))
+        if self.sign == "/":
+            self.question = "{0} {1} {2} \n= {3:.2f}".format(self.num1, self.sign, self.num2, self.answer)
         else:
-            self.printed_answer = self.answer
+            self.question = "{0} {1} {2} \n= {3}".format(self.num1, self.sign, self.num2, self.answer)
 
-        self.text = ("%s + %d \n= %s"
-                     % (self.num1, self.num2, self.printed_answer))
+        print(self.question)
 
-        print("%s + %d \n= %s"
-                     % (self.num1, self.num2, self.printed_answer))
-
-    def genAnswer(self):
-        min = 0
-        max = 3
-        randomNum = random.random() * (max - min) + min
-        return math.floor(randomNum)
+    # def genAnswer(self):
+    #     min = 0
+    #     max = 3
+    #     randomNum = random.random() * (max - min) + min
+    #     return math.floor(randomNum)
 
     def increaseScore(self):
         self.score += 1
-        self.msg2Statusbar.emit(str(self.score))
-        self.renderNewQuestion()
+        # self.msg2Statusbar.emit(str(self.score))
 
     def resetScore(self):
         self.score = 0
-        self.msg2Statusbar.emit(str(self.score))
+        # self.msg2Statusbar.emit(str(self.score))
+        # self.msg2Statusbar.emit(str("You Wrong! Reset Scrore."))
 
     def handleCorrect(self):
-        if self.printed_answer == self.answer:
+        if freakingmath.check_answer(self.num1, self.num2, self.sign, self.answer, True):
             self.increaseScore()
+            self.correctSound.play()
         else:
             self.resetScore()
+            self.incorrectSound.play()
+        self.getRandomMathProblem()
+        self.repaint()
 
     def handleWrong(self):
-        if self.printed_answer != self.answer:
+        if freakingmath.check_answer(self.num1, self.num2, self.sign, self.answer, False):
             self.increaseScore()
+            self.correctSound.play()
         else:
             self.resetScore()
+            self.incorrectSound.play()
+        self.getRandomMathProblem()
+        self.repaint()
 
     def paintEvent(self, event):
         qp = QPainter()
         qp.begin(self)
         self.drawText(event, qp)
-        # TODO: improve UI
-        # TODO: improve logic, add timer
         qp.end()
 
     def drawText(self, event, qp):
-        qp.setPen(QColor(100, 100, 100))
-        qp.setFont(QFont('Arial', 16))
-        qp.drawText(event.rect(), Qt.AlignCenter, self.text)
+        # Draw question
+        qp.setPen(QColor("#E0F2F1"))
+        qp.setFont(QFont('Roboto', 48, QFont.Bold))
+        qp.drawText(QRect(0, 0, WIDTH, HEIGHT), Qt.AlignCenter, self.question)
 
-    def renderNewQuestion(self):
-        self.getRandomMathProblem()
-        self.repaint()
+        # Draw score
+        qp.setPen(QColor("#E0F2F1"))
+        qp.setFont(QFont('Roboto', 20, QFont.Bold))
+        qp.drawText(QRect(0, 0, WIDTH, HEIGHT), Qt.AlignTop | Qt.AlignRight, str(self.score)) #Bit mask
 
-    # def keyPressEvent(self, event):
-    #     key = event.key()
-    #
-    #     if key == Qt.Key_Left:
-    #         self.trueBtn.clicked.connect(self.handleCorrect)
-    #     elif key == Qt.Key_Right:
-    #         self.falseBtn.clicked.connect(self.handleWrong)
-    #     else:
-    #         super(Board, self).keyPressEvent(event)
+        # TODO: Add Timer
+
+    # def renderNewQuestion(self):
+    #     self.getRandomMathProblem()
+    #     self.repaint()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     ex = Main()
-    # app.processEvents()
     sys.exit(app.exec_())
