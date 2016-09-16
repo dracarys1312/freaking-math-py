@@ -21,31 +21,30 @@ class Main(QMainWindow):
         self.initUI()
 
     def initUI(self):
-        self.board = Board(self)
+        self.board = Board(self, self.shuffle_background)
         self.setCentralWidget(self.board)
 
-        #self.statusbar = self.statusBar()
-        #self.board.msg2Statusbar[str].connect(self.statusbar.showMessage)
-        #status_bar_height = self.statusbar.height()
-        #print("status bar height : {0}".format(status_bar_height))
         
-        pal = QPalette()
-        role = QPalette.Background
-        pal.setColor(role, QColor("#009688"))
-        self.setPalette(pal)
-      
         self.board.start()
         screen = QDesktopWidget().screenGeometry()
         self.setGeometry((screen.width() - WIDTH) / 2, (screen.height() - HEIGHT) / 2, WIDTH, HEIGHT)
         self.setWindowTitle('Freaking Math')
         self.show()
 
+    def shuffle_background(self):
+        pal = QPalette()
+        role = QPalette.Background
+        self.random_colors = ["#03a9f4", "#00bcd4", "#673ab7", "#e91e63", "#f44336", "#009688"]
+        pal.setColor(role, QColor(random.choice(self.random_colors)))
+        self.setPalette(pal)
+
 class Board(QWidget):
     msg2Statusbar = pyqtSignal(str)
-    def __init__(self, parent):
+    def __init__(self, parent, shuffle_background):
         super().__init__(parent)
         self.initData()
         self.initBoard()
+        self.shuffle_background = shuffle_background
         # TODO: using keyboard to select True/False
 
     def initBoard(self):
@@ -66,8 +65,7 @@ class Board(QWidget):
 
         self.falseBtn = QPushButton("", self)
         self.falseBtn.setGeometry(falseBtnX, falseBtnY, BUTTON_WIDTH, BUTTON_HEIGHT)
-        self.icon = QIcon(".//img/false.png")
-        self.falseBtn.setIcon(self.icon)
+        self.falseBtn.setIcon(QIcon(".//img/false.png"))
         self.falseBtn.setIconSize(QSize(BUTTON_WIDTH, BUTTON_HEIGHT))
         self.falseBtn.clicked.connect(self.handleWrong)
 
@@ -80,6 +78,7 @@ class Board(QWidget):
 
     def start(self):
         self.msg2Statusbar.emit(str(self.score))
+        self.shuffle_background()
         self.getRandomMathProblem()
         # self.timer.start(Board.Speed, self)
         # self.renderNewQuestion()
@@ -132,6 +131,8 @@ class Board(QWidget):
         # self.msg2Statusbar.emit(str(self.score))
         # self.msg2Statusbar.emit(str("You Wrong! Reset Scrore."))
 
+    
+        
     def handleCorrect(self):
         if freakingmath.check_answer(self.num1, self.num2, self.sign, self.answer, True):
             self.increaseScore()
@@ -140,6 +141,7 @@ class Board(QWidget):
             self.resetScore()
             self.incorrectSound.play()
         self.getRandomMathProblem()
+        self.shuffle_background()
         self.repaint()
 
     def handleWrong(self):
@@ -150,6 +152,7 @@ class Board(QWidget):
             self.resetScore()
             self.incorrectSound.play()
         self.getRandomMathProblem()
+        self.shuffle_background()
         self.repaint()
 
     def paintEvent(self, event):
@@ -160,12 +163,12 @@ class Board(QWidget):
 
     def drawText(self, event, qp):
         # Draw question
-        qp.setPen(QColor("#E0F2F1"))
+        qp.setPen(QColor("#fafafa"))
         qp.setFont(QFont('Roboto', 48, QFont.Bold))
         qp.drawText(QRect(0, 0, WIDTH, HEIGHT), Qt.AlignCenter, self.question)
 
         # Draw score
-        qp.setPen(QColor("#E0F2F1"))
+        qp.setPen(QColor("#fafafa"))
         qp.setFont(QFont('Roboto', 20, QFont.Bold))
         qp.drawText(QRect(0, 0, WIDTH, HEIGHT), Qt.AlignTop | Qt.AlignRight, str(self.score)) #Bit mask
 
